@@ -89,14 +89,10 @@ def updateMoveOnBoard(state, player, move):
 	state[r][c] = player
 
 def aiMove(state, searchMethod = None):
-	# print('board received:\n', state)
-	# print('state received',id(state))
 	if not searchMethod:
 		randomValidMove(state)
 	elif searchMethod == 'min-max':
 		minmax(state, COMPUTER)
-	# print('state after minmax:\n',state)
-	# return state
 
 def randomValidMove(state):
 	empty_cells = getEmptyCells(state)
@@ -108,10 +104,8 @@ def getSuccessors(state,player):
 	successors = []
 	temp_board = copy.deepcopy(state)
 	for cell in empty_cells:
-		# print('cell', cell)
 		updateMoveOnBoard(temp_board, player, cell)
 		successors.append(temp_board)
-		# print('successors:\n',successors)
 		temp_board = copy.deepcopy(state)
 	return successors
 
@@ -161,21 +155,11 @@ def minmax(state, player):
 		if min_val > value:
 			best_move = s
 			min_val = value
-
-	## Sort the dict by Values
-	# return sorted(fringe, key = fringe.__getitem__)[0]
-	# print(min_val,'\n',best_move)
-	# print(state)
-	# print(id(state))
-	# state = best_move[:]
 	for i in range(3):
 		for j in range(3):
 			state[i][j] = best_move[i][j]
-	# print(id(state))
-	# return best_move
 
 def minmaxUtil(state, player):
-	# print('state received:', state)
 	if isLeafNode(state):
 		return evaluate(state)
 	best = -player*inf
@@ -192,7 +176,7 @@ def minmaxUtil(state, player):
 def play(state, player):
 	global board
 	if player == HUMAN:
-		# os.system('clear')
+		os.system('clear')
 		print('Your Turn')
 		displayBoard(state)
 		move = -1
@@ -204,8 +188,6 @@ def play(state, player):
 		updateMoveOnBoard(state, player, move)
 	else:
 		aiMove(state, searchMethod = 'min-max')
-		print('computer move:')
-		displayBoard(state)
 	## Checking for win or draw state
 	if isWinState(state, player):
 		displayBoard(state)
