@@ -7,6 +7,9 @@ Roadmap: 1. Build a game where computer randomly makes moves
 import graph
 import random
 import os
+import copy
+from math import inf
+from pprint import pprint
 
 board = [
 	[None, None, None],
@@ -36,15 +39,16 @@ def isWinState(state, player):
 	rows or two diagonals have the same player enteries
 	'''
 	win_states = [
-		[state[0][0], state[0][1], state[0][2]],
-		[state[1][0], state[1][1], state[1][2]],
-		[state[2][0], state[2][1], state[2][2]],
-		[state[0][0], state[1][0], state[2][0]],
-		[state[0][1], state[1][1], state[2][1]],
-		[state[0][2], state[1][2], state[2][2]],
-		[state[0][0], state[1][1], state[2][2]],
-		[state[1][2], state[1][1], state[2][0]]
+	[state[0][0], state[0][1], state[0][2]],
+	[state[1][0], state[1][1], state[1][2]],
+	[state[2][0], state[2][1], state[2][2]],
+	[state[0][0], state[1][0], state[2][0]],
+	[state[0][1], state[1][1], state[2][1]],
+	[state[0][2], state[1][2], state[2][2]],
+	[state[0][0], state[1][1], state[2][2]],
+	[state[1][2], state[1][1], state[2][0]]
 	]
+
 	if [player, player, player] in win_states:
 		return True
 	else:
@@ -64,8 +68,7 @@ def declareWinner(player):
 
 def displayBoard(state):
 	for row in state:
-		print(row)
-
+		pprint(row)
 def isValidMove(state, cell):
 	r, c = cell_to_pos[cell]
 	if not state[r][c]:
@@ -86,49 +89,111 @@ def updateMoveOnBoard(state, player, move):
 	state[r][c] = player
 
 def aiMove(state, searchMethod = None):
+	# print('board received:\n', state)
+	# print('state received',id(state))
 	if not searchMethod:
 		randomValidMove(state)
 	elif searchMethod == 'min-max':
 		minmax(state, COMPUTER)
+	# print('state after minmax:\n',state)
+	# return state
 
 def randomValidMove(state):
 	empty_cells = getEmptyCells(state)
 	move = random.choice(empty_cells)
 	updateMoveOnBoard(state, COMPUTER, move)
 
-def getSuccessors(state):
-	pass
+def getSuccessors(state,player):
+	empty_cells = getEmptyCells(state)
+	successors = []
+	temp_board = copy.deepcopy(state)
+	for cell in empty_cells:
+		# print('cell', cell)
+		updateMoveOnBoard(temp_board, player, cell)
+		successors.append(temp_board)
+		# print('successors:\n',successors)
+		temp_board = copy.deepcopy(state)
+	return successors
 
 def isLeafNode(state):
-	pass
+	win_states = [
+	[state[0][0], state[0][1], state[0][2]],
+	[state[1][0], state[1][1], state[1][2]],
+	[state[2][0], state[2][1], state[2][2]],
+	[state[0][0], state[1][0], state[2][0]],
+	[state[0][1], state[1][1], state[2][1]],
+	[state[0][2], state[1][2], state[2][2]],
+	[state[0][0], state[1][1], state[2][2]],
+	[state[1][2], state[1][1], state[2][0]]
+	]
+
+	if [1,1,1] in win_states:
+		return True
+	if [-1,-1,-1] in win_states:
+		return True
+	if isDrawState(state):
+		return True
+	return False
 
 def evaluate(state):
-	pass
+	win_states = [
+	[state[0][0], state[0][1], state[0][2]],
+	[state[1][0], state[1][1], state[1][2]],
+	[state[2][0], state[2][1], state[2][2]],
+	[state[0][0], state[1][0], state[2][0]],
+	[state[0][1], state[1][1], state[2][1]],
+	[state[0][2], state[1][2], state[2][2]],
+	[state[0][0], state[1][1], state[2][2]],
+	[state[1][2], state[1][1], state[2][0]]
+	]
+	if [1,1,1] in win_states:
+		return 1
+	elif [-1,-1,-1] in win_states:
+		return -1
+	else:
+		return 0
 
 def minmax(state, player):
 	"Using Depth-First Search and applying min-max"
-	fringe = {}
-	for s in getSuccessors(state):
-		fringe[s] = minmaxUtil(s, player*(-1))
+	min_val = 1
+	for s in getSuccessors(state, player):
+		value = minmaxUtil(s, player*(-1))
+		if min_val > value:
+			best_move = s
+			min_val = value
+
 	## Sort the dict by Values
+	# return sorted(fringe, key = fringe.__getitem__)[0]
+	# print(min_val,'\n',best_move)
+	# print(state)
+	# print(id(state))
+	# state = best_move[:]
+	for i in range(3):
+		for j in range(3):
+			state[i][j] = best_move[i][j]
+	# print(id(state))
+	# return best_move
 
 def minmaxUtil(state, player):
+	# print('state received:', state)
 	if isLeafNode(state):
 		return evaluate(state)
-
-	for s in getSuccessors(state):
-		value = minmaxUtil(state, player*(-1))
+	best = -player*inf
+	for s in getSuccessors(state, player):
+		value = minmaxUtil(s, player*(-1))
 		if player == HUMAN: ## MaxPlayer
-			if value > state.value:
-				state.value = value
+			if value > best:
+				best = value
 		else:
-			if value < state.value:
-				state.value = value
-	return state.value
+			if value < best:
+				best = value
+	return best
 
 def play(state, player):
+	global board
 	if player == HUMAN:
-		os.system('clear')
+		# os.system('clear')
+		print('Your Turn')
 		displayBoard(state)
 		move = -1
 		while move < 1 or move > 9:
@@ -139,6 +204,8 @@ def play(state, player):
 		updateMoveOnBoard(state, player, move)
 	else:
 		aiMove(state, searchMethod = 'min-max')
+		print('computer move:')
+		displayBoard(state)
 	## Checking for win or draw state
 	if isWinState(state, player):
 		displayBoard(state)
@@ -153,7 +220,7 @@ def play(state, player):
 
 def main():
 	done = False
-	player = random.choice([HUMAN, COMPUTER])
+	player = HUMAN
 	while not done:
 		done = play(board, player)
 		player *= -1 ## Changing player 
