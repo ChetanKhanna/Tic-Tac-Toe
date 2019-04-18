@@ -149,7 +149,7 @@ def evaluate(state):
 
 def minmax(state, player):
 	"Using Depth-First Search and applying min-max"
-	min_val = 1
+	min_val = inf
 	for s in getSuccessors(state, player):
 		value = minmaxUtil(s, player*(-1))
 		if min_val > value:
