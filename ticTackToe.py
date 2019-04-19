@@ -106,11 +106,14 @@ def aiMove(state, searchMethod = None):
 		minmax(state, COMPUTER)
 
 def randomValidMove(state):
+	# Randomly generates a valid move.
 	empty_cells = getEmptyCells(state)
 	move = random.choice(empty_cells)
 	updateMoveOnBoard(state, COMPUTER, move)
 
 def getSuccessors(state,player):
+	# generates a list of successors -- possible moves for the 
+	# "player" from the given state
 	empty_cells = getEmptyCells(state)
 	successors = []
 	temp_state = copy.deepcopy(state)
@@ -121,6 +124,8 @@ def getSuccessors(state,player):
 	return successors
 
 def isLeafNode(state):
+	# Checks if node is a leaf node -- is either there is a win, loss or draw
+	# situation in the node, the node is a leaf node.
 	curr_state = state.state
 	win_states = [
 	[curr_state[0][0], curr_state[0][1], curr_state[0][2]],
@@ -142,6 +147,7 @@ def isLeafNode(state):
 	return False
 
 def evaluate(state):
+	## Evaluates wheather leaf node is a Win, Loss or Draw for Human player
 	curr_state = state.state
 	win_states = [
 	[curr_state[0][0], curr_state[0][1], curr_state[0][2]],
@@ -174,6 +180,8 @@ def minmax(state, player):
 
 def minmaxUtil(state, player):
 	if isLeafNode(state):
+		# if current state is leaf node, we evaluate it - (1, 0 or -1)
+		# and return the control to parent node, whose value gets updated accordingly
 		return evaluate(state)
 	best = -player*inf
 	for s in getSuccessors(state, player):
@@ -187,8 +195,13 @@ def minmaxUtil(state, player):
 	return best
 
 def play(state, player):
+	'''
+	Main function for running the game.
+	'''
 	global board
 	if player == HUMAN:
+		# If player is HUMAN, take input from user (1-9) and display
+		# the board with updated move.
 		os.system('clear')
 		print('Your Turn')
 		displayBoard(state)
@@ -214,6 +227,9 @@ def play(state, player):
 		return False
 
 def main():
+	'''
+	Controller function for the game.
+	'''
 	global board
 	done = False
 	player = HUMAN
