@@ -32,21 +32,29 @@ def buildGraph():
 	'''
 	pass
 
+class stateObject:
+	"""docstring for stateObject"""
+	def __init__(self, state):
+		self.state = board
+		self.val = None
+		
+
 def isWinState(state, player):
 	'''
 	checks if current state of board is a winning config
 	A winning config is when either of three cols or three
 	rows or two diagonals have the same player enteries
 	'''
+	curr_state = state.state
 	win_states = [
-	[state[0][0], state[0][1], state[0][2]],
-	[state[1][0], state[1][1], state[1][2]],
-	[state[2][0], state[2][1], state[2][2]],
-	[state[0][0], state[1][0], state[2][0]],
-	[state[0][1], state[1][1], state[2][1]],
-	[state[0][2], state[1][2], state[2][2]],
-	[state[0][0], state[1][1], state[2][2]],
-	[state[1][2], state[1][1], state[2][0]]
+	[curr_state[0][0], curr_state[0][1], curr_state[0][2]],
+	[curr_state[1][0], curr_state[1][1], curr_state[1][2]],
+	[curr_state[2][0], curr_state[2][1], curr_state[2][2]],
+	[curr_state[0][0], curr_state[1][0], curr_state[2][0]],
+	[curr_state[0][1], curr_state[1][1], curr_state[2][1]],
+	[curr_state[0][2], curr_state[1][2], curr_state[2][2]],
+	[curr_state[0][0], curr_state[1][1], curr_state[2][2]],
+	[curr_state[1][2], curr_state[1][1], curr_state[2][0]]
 	]
 
 	if [player, player, player] in win_states:
@@ -55,7 +63,7 @@ def isWinState(state, player):
 		return False
 
 def isDrawState(state):
-	for row in state:
+	for row in state.state:
 		if None in row:
 			return False
 	return True
@@ -67,11 +75,12 @@ def declareWinner(player):
 		print('You lost.')
 
 def displayBoard(state):
-	for row in state:
+	for row in state.state:
 		pprint(row)
+
 def isValidMove(state, cell):
 	r, c = cell_to_pos[cell]
-	if not state[r][c]:
+	if not state.state[r][c]:
 		return True
 	else:
 		return False
@@ -80,13 +89,13 @@ def getEmptyCells(state):
 	empty_cells = []
 	for i in range(1,10):
 		r, c = cell_to_pos[i]
-		if not state[r][c]:
+		if not state.state[r][c]:
 			empty_cells.append(i)
 	return empty_cells
 
 def updateMoveOnBoard(state, player, move):
 	r, c = cell_to_pos[move]
-	state[r][c] = player
+	state.state[r][c] = player
 
 def aiMove(state, searchMethod = None):
 	if not searchMethod:
@@ -102,23 +111,24 @@ def randomValidMove(state):
 def getSuccessors(state,player):
 	empty_cells = getEmptyCells(state)
 	successors = []
-	temp_board = copy.deepcopy(state)
+	temp_state = copy.deepcopy(state)
 	for cell in empty_cells:
-		updateMoveOnBoard(temp_board, player, cell)
-		successors.append(temp_board)
-		temp_board = copy.deepcopy(state)
+		updateMoveOnBoard(temp_state, player, cell)
+		successors.append(temp_state)
+		temp_state = copy.deepcopy(state)
 	return successors
 
 def isLeafNode(state):
+	curr_state = state.state
 	win_states = [
-	[state[0][0], state[0][1], state[0][2]],
-	[state[1][0], state[1][1], state[1][2]],
-	[state[2][0], state[2][1], state[2][2]],
-	[state[0][0], state[1][0], state[2][0]],
-	[state[0][1], state[1][1], state[2][1]],
-	[state[0][2], state[1][2], state[2][2]],
-	[state[0][0], state[1][1], state[2][2]],
-	[state[1][2], state[1][1], state[2][0]]
+	[curr_state[0][0], curr_state[0][1], curr_state[0][2]],
+	[curr_state[1][0], curr_state[1][1], curr_state[1][2]],
+	[curr_state[2][0], curr_state[2][1], curr_state[2][2]],
+	[curr_state[0][0], curr_state[1][0], curr_state[2][0]],
+	[curr_state[0][1], curr_state[1][1], curr_state[2][1]],
+	[curr_state[0][2], curr_state[1][2], curr_state[2][2]],
+	[curr_state[0][0], curr_state[1][1], curr_state[2][2]],
+	[curr_state[1][2], curr_state[1][1], curr_state[2][0]]
 	]
 
 	if [1,1,1] in win_states:
@@ -130,15 +140,16 @@ def isLeafNode(state):
 	return False
 
 def evaluate(state):
+	curr_state = state.state
 	win_states = [
-	[state[0][0], state[0][1], state[0][2]],
-	[state[1][0], state[1][1], state[1][2]],
-	[state[2][0], state[2][1], state[2][2]],
-	[state[0][0], state[1][0], state[2][0]],
-	[state[0][1], state[1][1], state[2][1]],
-	[state[0][2], state[1][2], state[2][2]],
-	[state[0][0], state[1][1], state[2][2]],
-	[state[1][2], state[1][1], state[2][0]]
+	[curr_state[0][0], curr_state[0][1], curr_state[0][2]],
+	[curr_state[1][0], curr_state[1][1], curr_state[1][2]],
+	[curr_state[2][0], curr_state[2][1], curr_state[2][2]],
+	[curr_state[0][0], curr_state[1][0], curr_state[2][0]],
+	[curr_state[0][1], curr_state[1][1], curr_state[2][1]],
+	[curr_state[0][2], curr_state[1][2], curr_state[2][2]],
+	[curr_state[0][0], curr_state[1][1], curr_state[2][2]],
+	[curr_state[1][2], curr_state[1][1], curr_state[2][0]]
 	]
 	if [1,1,1] in win_states:
 		return 1
@@ -157,7 +168,7 @@ def minmax(state, player):
 			min_val = value
 	for i in range(3):
 		for j in range(3):
-			state[i][j] = best_move[i][j]
+			state.state[i][j] = best_move.state[i][j]
 
 def minmaxUtil(state, player):
 	if isLeafNode(state):
@@ -201,10 +212,12 @@ def play(state, player):
 		return False
 
 def main():
+	global board
 	done = False
 	player = HUMAN
+	state = stateObject(board)
 	while not done:
-		done = play(board, player)
+		done = play(state, player)
 		player *= -1 ## Changing player 
 
 if __name__ == '__main__':
