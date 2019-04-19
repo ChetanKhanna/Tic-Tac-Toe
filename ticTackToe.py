@@ -37,6 +37,8 @@ class stateObject:
 	def __init__(self, state):
 		self.state = board
 		self.val = None
+		self.parent = None
+		self.role = None # Maximizer or Minimizer
 		
 
 def isWinState(state, player):
@@ -54,7 +56,7 @@ def isWinState(state, player):
 	[curr_state[0][1], curr_state[1][1], curr_state[2][1]],
 	[curr_state[0][2], curr_state[1][2], curr_state[2][2]],
 	[curr_state[0][0], curr_state[1][1], curr_state[2][2]],
-	[curr_state[1][2], curr_state[1][1], curr_state[2][0]]
+	[curr_state[0][2], curr_state[1][1], curr_state[2][0]]
 	]
 
 	if [player, player, player] in win_states:
@@ -128,7 +130,7 @@ def isLeafNode(state):
 	[curr_state[0][1], curr_state[1][1], curr_state[2][1]],
 	[curr_state[0][2], curr_state[1][2], curr_state[2][2]],
 	[curr_state[0][0], curr_state[1][1], curr_state[2][2]],
-	[curr_state[1][2], curr_state[1][1], curr_state[2][0]]
+	[curr_state[0][2], curr_state[1][1], curr_state[2][0]]
 	]
 
 	if [1,1,1] in win_states:
@@ -149,7 +151,7 @@ def evaluate(state):
 	[curr_state[0][1], curr_state[1][1], curr_state[2][1]],
 	[curr_state[0][2], curr_state[1][2], curr_state[2][2]],
 	[curr_state[0][0], curr_state[1][1], curr_state[2][2]],
-	[curr_state[1][2], curr_state[1][1], curr_state[2][0]]
+	[curr_state[0][2], curr_state[1][1], curr_state[2][0]]
 	]
 	if [1,1,1] in win_states:
 		return 1
@@ -160,7 +162,7 @@ def evaluate(state):
 
 def minmax(state, player):
 	"Using Depth-First Search and applying min-max"
-	min_val = inf
+	min_val = inf # Initialinzing worst val for AI player (minimizer)
 	for s in getSuccessors(state, player):
 		value = minmaxUtil(s, player*(-1))
 		if min_val > value:
