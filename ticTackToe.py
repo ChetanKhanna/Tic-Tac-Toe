@@ -119,6 +119,10 @@ def getSuccessors(state,player):
 	temp_state = copy.deepcopy(state)
 	for cell in empty_cells:
 		updateMoveOnBoard(temp_state, player, cell)
+		temp_state.parent = state
+		temp_state.val = player*inf
+		# print(temp_state.parent, temp_state.role, temp_state.val, temp_state)
+		# _ = input('asdfgg')
 		successors.append(temp_state)
 		temp_state = copy.deepcopy(state)
 	return successors
@@ -168,12 +172,16 @@ def evaluate(state):
 
 def minmax(state, player):
 	"Using Depth-First Search and applying min-max"
-	min_val = inf # Initialinzing worst val for AI player (minimizer)
+	# min_val = inf # Initialinzing worst val for AI player (minimizer)
+	state.val = inf
+	# print(state.parent, state.role, state.val)
+	# _ = input('sdf')
+
 	for s in getSuccessors(state, player):
 		value = minmaxUtil(s, player*(-1))
-		if min_val > value:
+		if state.val > value:
 			best_move = s
-			min_val = value
+			state.val = value
 	for i in range(3):
 		for j in range(3):
 			state.state[i][j] = best_move.state[i][j]
@@ -183,16 +191,18 @@ def minmaxUtil(state, player):
 		# if current state is leaf node, we evaluate it - (1, 0 or -1)
 		# and return the control to parent node, whose value gets updated accordingly
 		return evaluate(state)
-	best = -player*inf
+	# best = -player*inf
+	# print('best', best, 'val', state.val)
 	for s in getSuccessors(state, player):
 		value = minmaxUtil(s, player*(-1))
 		if player == HUMAN: ## MaxPlayer
-			if value > best:
-				best = value
+			if value > state.val:
+				state.val = value
 		else:
-			if value < best:
-				best = value
-	return best
+			if value < state.val:
+				state.val = value
+		# state.val = best
+	return state.val
 
 def play(state, player):
 	'''
